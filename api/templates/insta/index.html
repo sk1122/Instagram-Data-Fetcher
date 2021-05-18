@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Instagram Data</title>
+	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+	<style>
+		.bg-fuchsia-500 {
+			background:rgba(217,70,239,var(--tw-bg-opacity))
+		}
+		.slidecontainer {
+		  width: 100%; /* Width of the outside container */
+		}
+
+		/* The slider itself */
+		.slider {
+		  -webkit-appearance: none;  /* Override default CSS styles */
+		  margin: 0;
+		  padding: 0;
+		  appearance: none;
+		  width: 40%; /* Full-width */
+		  height: 25px; /* Specified height */
+		  background: #d3d3d3; /* Grey background */
+		  outline: none; /* Remove outline */
+		  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+		  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+		  transition: opacity .2s;
+		}
+
+		/* Mouse-over effects */
+		.slider:hover {
+		  opacity: 1; /* Fully shown on mouse-over */
+		}
+
+		/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+		.slider::-webkit-slider-thumb {
+		  -webkit-appearance: none; /* Override default look */
+		  appearance: none;
+		  width: 25px; /* Set a specific slider handle width */
+		  height: 25px; /* Slider handle height */
+		  background: #04AA6D; /* Green background */
+		  cursor: pointer; /* Cursor on hover */
+		}
+
+		.slider::-moz-range-thumb {
+		  width: 25px; /* Set a specific slider handle width */
+		  height: 25px; /* Slider handle height */
+		  background: #04AA6D; /* Green background */
+		  cursor: pointer; /* Cursor on hover */
+		}
+	</style>
+</head>
+<body class="w-full h-full flex flex-col justify-center items-center p-0 m-0 bg-black">
+
+	<div class="container w-full h-1/3 bg-red-500">
+		{% if data.has_other_pages %}
+			<ul class="flex justify-around">
+				{% if data.has_previous %}
+					<li>
+						<a href="?page={{ data.previous_page_number }}">&laquo;
+						</a>
+					</li>
+					{% else %}
+					<li class="disabled">
+						<span>&laquo;</span>
+					</li>
+					{% endif %}
+					{% for i in data.paginator.page_range %}
+						{% if data.number == i %}
+							<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+						{% else %}
+							<li><a href="?page={{ i }}">{{ i }}</a></li>
+						{% endif %}
+					{% endfor %}
+					{% if data.has_next %}
+						<li><a href="?page={{ data.next_page_number }}">&raquo;</a></li>
+					{% else %}
+						<li class="disabled"><span>&raquo;</span></li>
+				{% endif %}
+			</ul>
+		{% endif %}
+	</div>
+
+	<div class="container w-full h-1/3">
+		<form action="" method="POST" class="range-wrap">
+			{% csrf_token %}
+			<div class="slidecontainer">
+				<input name="range1" type="range" min="10" max="50000" value="50" class="slider" id="myRange">
+				<input name="range2" type="range" min="50001" max="100000" value="50" class="slider" id="myRange1">
+			</div>
+			<p id="demo" class="text-white"></p>
+			<p id="demo1" class="text-white"></p>
+			<input id="submit" type="submit" class="p-2 bg-blue-700 hover:rounded-xl hover:bg-fuchsia-500">
+		</form>
+	</div>
+
+	<div class="container ml-5 mt-5 grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+		{% for value in data %}
+			<div class="container w-48 h-96 bg-fuchsia-500">
+				<div class="relative container w-full h-1/3 bg-blue-700 flex flex-col justify-center items-center text-center">
+					<h1 class="font-extrabold text-xl text-white font-sans">{{ value.1.full_name }}</h1>
+					<h3 class="p-2 bg-red-500">{{value.1.business_category}}</h3>
+				</div>
+				<div class="container flex flex-col gap-4 w-full h-2/3">
+					<h3 class="font-sans font-bold text-lg">Username - {{value.0}}</h3>
+					<div class="flex flex-between">
+						<h3><strong>Followers</strong>{{value.1.followers}}</h3>
+						<h3><strong>Following</strong> {{value.1.followees}}</h3>
+					</div>
+					<h3 class="text-sm">{{value.1.bio}}</h3>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+	<script>
+		var slider = document.getElementById("myRange");
+		var output = document.getElementById("demo");
+		output.innerHTML = slider.value; // Display the default slider value
+
+		// Update the current slider value (each time you drag the slider handle)
+		slider.oninput = function() {
+			output.innerHTML = this.value;
+		} 
+
+		var slider1 = document.getElementById("myRange1");
+		var output1 = document.getElementById("demo1");
+		output1.innerHTML = slider1.value; // Display the default slider value
+
+		// Update the current slider value (each time you drag the slider handle)
+		slider1.oninput = function() {
+			output1.innerHTML = this.value;
+		}
+	</script>
+</body>
+</html>
